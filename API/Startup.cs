@@ -36,21 +36,70 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
            
+        //    services.AddAuthentication(
+        //    CertificateAuthenticationDefaults.AuthenticationScheme)
+        //   .AddCertificate();
+
+
+
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
+            
+                //add
+             services.AddCors();
+
             services.AddDbContext<StoreContext>(x => 
             x.UseSqlite(_config.GetConnectionString
             ("DefaultConnection")));
 
             services.AddApplicationServices();
             services.AddSwaggerDocumentation();
-            services.AddCors(opt => 
-            {
-                opt.AddPolicy("CorsPolicy", policy =>
-                {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
-                });
-            });
+
+            // services.AddCors(opt => 
+            // {
+            //     opt.AddPolicy("CorsPolicy", policy =>
+            //     {
+            //         policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
+                    
+            //     });
+            // });
+
+        //    services.AddCors(options =>
+        // {
+        //     options.AddPolicy("CorsPolicy",
+        //         builder => builder.WithOrigins("https://localhost:4200")
+        //             .AllowAnyMethod()
+        //             .AllowAnyHeader()
+        //             .AllowCredentials());
+        // });
+
+        // services.AddMvc();
+          
+            // services.AddCors(opt => 
+            // {
+            //     opt.AddDefaultPolicy(
+            //      policy =>
+            //     {
+            //         policy.WithOrigins("https://localhost:4200");
+                    
+            //     });
+            // });
+
+    //     services.AddCors(options =>{
+    //     options.AddPolicy("CorsPolicy",
+    //         builder => builder.AllowAnyOrigin()
+    //         .AllowAnyMethod()
+    //         .AllowAnyHeader()
+    //         .AllowCredentials());
+    //   });
+
+    //    services.AddCors(options =>{
+    //     options.AddPolicy("CorsPolicy",
+    //         builder => builder.AllowAnyOrigin()
+    //         .AllowAnyMethod()
+    //         .AllowAnyHeader()
+    //         );
+    //   });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,9 +114,21 @@ namespace API
 
             app.UseRouting();
 
+
+             app.UseCors(options => options
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()
+                                    .WithOrigins("https://localhost:4200"));
+
+            //new red
+            app.UseHttpsRedirection();
+
             app.UseStaticFiles();
             
-            app.UseCors("CorsPolicy");
+           // app.UseCors("CorsPolicy");
+           // app.UseCors("CorsPolicy");
+
+            // app.UseAuthentication();
 
             app.UseAuthorization();
 
