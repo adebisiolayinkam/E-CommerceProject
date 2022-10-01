@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 namespace API
 {
@@ -36,12 +37,6 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
            
-        //    services.AddAuthentication(
-        //    CertificateAuthenticationDefaults.AuthenticationScheme)
-        //   .AddCertificate();
-
-
-
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
             
@@ -52,54 +47,19 @@ namespace API
             x.UseSqlite(_config.GetConnectionString
             ("DefaultConnection")));
 
+
+
+            services.AddSingleton<IConnectionMultiplexer>( c => {
+                var configuration = ConfigurationOptions.Parse(_config
+                .GetConnectionString("Redis"), true);
+                return ConnectionMultiplexer.Connect(configuration);
+            });
+
+
+
             services.AddApplicationServices();
             services.AddSwaggerDocumentation();
 
-            // services.AddCors(opt => 
-            // {
-            //     opt.AddPolicy("CorsPolicy", policy =>
-            //     {
-            //         policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
-                    
-            //     });
-            // });
-
-        //    services.AddCors(options =>
-        // {
-        //     options.AddPolicy("CorsPolicy",
-        //         builder => builder.WithOrigins("https://localhost:4200")
-        //             .AllowAnyMethod()
-        //             .AllowAnyHeader()
-        //             .AllowCredentials());
-        // });
-
-        // services.AddMvc();
-          
-            // services.AddCors(opt => 
-            // {
-            //     opt.AddDefaultPolicy(
-            //      policy =>
-            //     {
-            //         policy.WithOrigins("https://localhost:4200");
-                    
-            //     });
-            // });
-
-    //     services.AddCors(options =>{
-    //     options.AddPolicy("CorsPolicy",
-    //         builder => builder.AllowAnyOrigin()
-    //         .AllowAnyMethod()
-    //         .AllowAnyHeader()
-    //         .AllowCredentials());
-    //   });
-
-    //    services.AddCors(options =>{
-    //     options.AddPolicy("CorsPolicy",
-    //         builder => builder.AllowAnyOrigin()
-    //         .AllowAnyMethod()
-    //         .AllowAnyHeader()
-    //         );
-    //   });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -124,12 +84,7 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
-            
-           // app.UseCors("CorsPolicy");
-           // app.UseCors("CorsPolicy");
-
-            // app.UseAuthentication();
-
+         
             app.UseAuthorization();
 
             app.UseSwaggerDocumentation();
