@@ -68,6 +68,7 @@ namespace API.Controllers
        {
             var user = await _userManager.FindByUserByClaimsPrincipleEmailWithAddressAsync
             (HttpContext.User);
+
             user.Address = _mapper.Map<AddressDto, Address>(address);
 
             var result = await _userManager.UpdateAsync(user);
@@ -97,25 +98,30 @@ namespace API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterAdeDto registerDto)
+        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
-            var user = new AppUser
+            if (CheckEmailExistsAsync(registerDto.Email).Result.Value)
             {
-                DisplayName = registerDto.DisplayName,
-                Email = registerDto.Email,
-                UserName = registerDto.Email, 
-                Address= new Address{
-                FirstName= registerDto.DisplayName, 
-                    LastName=registerDto.DisplayName,
-                    Street = registerDto.Street,
-                    City = registerDto.City,
-                    State = registerDto.State,
-                    ZipCode = registerDto.ZipCode,
-                    
-                }
-            };
+                return new BadRequestObjectResult(new ApiValidationErrorResponse{Errors = new [] 
+                {"Email address is in used"}});
+            }
+
+            // var user = new AppUser
+            // {
+            //     DisplayName = registerDto.DisplayName,
+            //     Email = registerDto.Email,
+            //     UserName = registerDto.Email, 
+            
+            // };
+            var user = new AppUser();
+            user.DisplayName = registerDto.DisplayName;
+            user.Email = registerDto.Email;
+            user.UserName =registerDto.Email;
+            
+
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
+
             if (!result.Succeeded) return BadRequest(new ApiResponse(400));
 
             return new UserDto
