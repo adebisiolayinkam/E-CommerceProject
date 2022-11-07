@@ -3,9 +3,11 @@
     "",
     "\\API",
     "\\Core",
+    "\\Core\\Interfaces",
     "\\Infrastructure",
+    "\\Infrastructure\\Data",
     "\\Infrastructure\\Identity"
   ],
-  "SelectedNode": "\\ecommerce.sln",
+  "SelectedNode": "\\Core\\Interfaces\\IGenericRepository.cs",
   "PreviewInSolutionExplorer": false
 }
